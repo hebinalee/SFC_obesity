@@ -1,3 +1,7 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Average BOLD signal for each atlas  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function meanbold(a)
 basepath = 'V:/hblee/2.stepwise/6.refinement/';
 sex = xlsread('V:/hblee/2.stepwise/Enhanced_NKI.xlsx', 6, 'C2:C469');
