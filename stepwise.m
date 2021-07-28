@@ -1,6 +1,6 @@
-###########################################
-## Perform stepwise connectivity analysis
-###########################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Perform stepwise connectivity analysis
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function stepwise()
 if ispc
