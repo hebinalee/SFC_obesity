@@ -1,5 +1,5 @@
 ## SFC_obesity ##
-This is code for the paper "Disrupted stepwise functional brain organization in overweight individuals" (under review)<br />
+This is code for the paper **"Disrupted stepwise functional brain organization in overweight individuals"** (under review)<br />
 The paper link will be updated.<br />
 If you use this code, please cite the article.<br /><br />
 
