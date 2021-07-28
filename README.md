@@ -5,9 +5,9 @@ If you use this code, please cite the article.<br /><br />
 
 [BCT Toolbox](https://sites.google.com/site/bctnet/) was used for SFC analysis.<br /><br />
 
-- **.m**  -----  to<br />
-- **.m**         -----  to<br />
-- **.m**              -----  to<br />
+- **meanbold.m**        -----  to average BOLD signal for each atlas<br />
+- **connectivity.m**    -----  to compute connectivity matrix from mean BOLD signals<br />
+- **stepwise.m**        -----  to perform stepwise connectivity analysis<br />
 - **.m**              -----  to<br />
 - **.m**            -----  to<br />
 - **.m**              -----  to<br />
