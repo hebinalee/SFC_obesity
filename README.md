@@ -8,10 +8,6 @@ If you use this code, please cite the article.<br /><br />
 - **meanbold.m**        -----  to average BOLD signal for each atlas<br />
 - **connectivity.m**    -----  to compute connectivity matrix from mean BOLD signals<br />
 - **stepwise.m**        -----  to perform stepwise connectivity analysis<br />
-- **.m**              -----  to<br />
-- **.m**            -----  to<br />
-- **.m**              -----  to<br />
-- **.m**          -----  to<br />
-- **.m**             -----  to<br /><br />
+- **.m**              -----  to<br /><br />
 
 **copyrightⓒ 2021 All rights reserved by Hyebin Lee<br /><br />**
