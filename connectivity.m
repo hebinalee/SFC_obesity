@@ -1,6 +1,6 @@
-######################################################
-## Compute connectivity matrix from meanBOLD signals
-######################################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Compute connectivity matrix from meanBOLD signals
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function connectivity(a)
 basepath = 'V:/hblee/2.stepwise/6.refinement/';
