@@ -1,3 +1,7 @@
+######################################################
+## Compute connectivity matrix from meanBOLD signals
+######################################################
+
 function connectivity(a)
 basepath = 'V:/hblee/2.stepwise/6.refinement/';
 load([basepath, 'a_sublist.mat'])
