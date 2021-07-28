@@ -1,3 +1,7 @@
+###########################################
+## Perform stepwise connectivity analysis
+###########################################
+
 function stepwise()
 if ispc
     store7 = 'V:/';
