@@ -3,6 +3,8 @@ This is code for the paper "Disrupted stepwise functional brain organization in 
 The paper link will be updated.<br />
 If you use this code, please cite the article.<br /><br />
 
+[BCT Toolbox](https://sites.google.com/site/bctnet/) was used for SFC analysis.<br /><br />
+
 - **.m**  -----  to<br />
 - **.m**         -----  to<br />
 - **.m**              -----  to<br />
