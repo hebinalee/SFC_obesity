@@ -3,7 +3,7 @@ This is code for the paper **"Disrupted stepwise functional brain organization i
 The paper link will be updated.<br />
 If you use this code, please cite the article.<br /><br />
 
-[BCT Toolbox](https://sites.google.com/site/bctnet/) was used for SFC analysis.<br /><br />
+**[BCT Toolbox](https://sites.google.com/site/bctnet/)** was used for SFC analysis.<br /><br />
 
 - **meanbold.m**　　　-----　to average BOLD signal for each atlas<br />
 - **connectivity.m**　　-----　to compute connectivity matrix from mean BOLD signals<br />
