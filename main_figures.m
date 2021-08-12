@@ -22,7 +22,23 @@ cool_warm(1,:) = cool_warm(129,:);
 group_name = {'HW', 'OB'};
 
 
-%% 1) Degree centrality
+%% 1) R-values
+load([basepath, 'c_Rvalue.mat']);
+
+% cortex
+obj = plot_hemispheres2(R(1:210,:), {surf_lh,surf_rh}, 'parcellation', parc, 'clim', [-0.3; 0.3]);
+colormap(obj.figure, cool_warm)
+saveas(gcf, [outpath, 'figures/seed_R.png'])
+close(gcf)
+
+% subcortical
+plot_subcortical(mean_subcortical(R), 'ventricles', 'False', 'cmap', 'RdBu_r', 'color_range', [-0.3 0.3]);
+enigma_colormap(cool_warm)
+saveas(gcf, [outpath, 'figures/seed_R_subcor.png'])
+close(gcf)
+
+
+%% 2) Degree centrality
 load([outpath, 'groupmeanSFC.mat'])
 clear grpmean_SFC
 
@@ -46,7 +62,7 @@ end
 % subcortex
 for gidx = 1 : 2
     for step = 1 : Nstep
-        dc_subcor = mean_subcor(squeeze(grpmean_DC(gidx, :, step))');
+        dc_subcor = mean_subcortical(squeeze(grpmean_DC(gidx, :, step))');
         plot_subcortical(dc_subcor, 'ventricles', 'False', 'cmap', 'RdBu_r', 'color_range', dc_range(step,gidx*2-1:gidx*2));
         enigma_colormap(cool_warm)
         saveas(gcf, [outpath, 'figures/dc_subcor_', group_name{gidx}, num2str(step), '.png'])
@@ -55,7 +71,7 @@ for gidx = 1 : 2
 end
 
 
-%% 2) Hub regions
+%% 3) Hub regions
 hub = cell(2,1);
 for gidx = 1 : 2
     hub{gidx} = zeros (224, Nstep);
@@ -63,7 +79,7 @@ for gidx = 1 : 2
         stepDC = squeeze(grpmean_DC(gidx, :, step))';
         stepDC = (stepDC - min(stepDC)) / (max(stepDC) - min(stepDC));
         stepDC = stepDC / mean(stepDC);
-        hub{gidx}(:, step) = [stepDC(1:210); mean_subcor(stepDC)] > 1.5;
+        hub{gidx}(:, step) = [stepDC(1:210); mean_subcortical(stepDC)] > 1.5;
     end
 end
 
@@ -93,7 +109,7 @@ for gidx = 1 : 2
 end
 
 
-%% 3) Group difference: roi-level
+%% 4) Group difference: roi-level
 load([outpath, 'groupdiff_ROI_ttest.mat']);
 sigT = H .* T;
 
@@ -118,7 +134,7 @@ for gidx = 1 : 2
 end
 
 
-%% 4) Group difference: network-level
+%% 5) Group difference: network-level
 load([outpath, 'groupdiff_NET_ttest.mat']);
 red = cool_warm(129+128/2, :);
 blue = cool_warm(128/2, :);
