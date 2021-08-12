@@ -5,3 +5,4 @@ for i = 1 : steps
 	stepfc = norm_sfc(:,:,i);
     norm_sfc(:,:,i) = (stepfc - mean(stepfc(:))) / std(stepfc(:));
 end
+end
