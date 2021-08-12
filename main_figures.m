@@ -21,6 +21,7 @@ cool_warm(1,:) = cool_warm(129,:);
 
 group_name = {'HW', 'OB'};
 
+
 %% 1) Degree centrality
 load([outpath, 'groupmeanSFC.mat'])
 clear grpmean_SFC
@@ -96,6 +97,7 @@ end
 load([outpath, 'groupdiff_ROI_ttest.mat']);
 sigT = H .* T;
 
+% cortex
 steps = [[1, 2, 3, 4]; [5, 6, 7, 7]];
 clim = [[-5 -5 -5 -5]; [5 5 5 5]];
 for mod = 1 : 2
