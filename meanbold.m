@@ -4,6 +4,7 @@
 
 function meanbold()
 basepath = 'X:/path/myfolder/';
+
 %% 1) Save demogrphic information
 sex = xlsread([basepath, 'Enhanced_NKI.xlsx'], 6, 'C2:C469');
 obesity = xlsread([basepath, 'Enhanced_NKI.xlsx'], 6, 'D2:E469');
@@ -14,11 +15,13 @@ load([basepath, 'a_sublist.mat'])
 Nsub = length(sublist);
 filepath = 'REST_645/func_results_REST_645/Smooth_REST_645.nii.gz';
 
+
 %% 2) Get BNA atlas map
 bna_file = [basepath, 'Atlas/BNA_3mm.nii'];
 bna = load_nii(bna_file);
 atlas = bna.img;
 Nroi = max(atlas(:));
+
 
 %% 3) Average bold signal for each ROI
 for sidx = 1 : Nsub
