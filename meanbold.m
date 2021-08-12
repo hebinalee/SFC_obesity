@@ -2,7 +2,7 @@
 %%  Average BOLD signal for each atlas
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function meanbold(a)
+function meanbold()
 basepath = 'X:/path/myfolder/';
 %% 1) Save demogrphic information
 sex = xlsread([basepath, 'Enhanced_NKI.xlsx'], 6, 'C2:C469');
