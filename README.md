@@ -9,7 +9,8 @@ If you use this code, please cite the article.<br /><br />
 - **connectivity_seed.m**　　-----　to compute connectivity matrix from mean BOLD signals and define seed regions<br />
 - **stepwise_fc.m**　　　　　-----　to compute stepwise connectivity matrix<br />
 - **group_analysis.m**　　　-----　to perform group analysis using degree of SFC<br />
-- **TFEQ_association.m**　　----- to Associate degree of SFC with TFEQ scores<br />
-- **main_figures.m**　　　　----- to plot the results of group analysis<br /><br /><br /><br />
+- **TFEQ_association.m**　　-----　to Associate degree of SFC with TFEQ scores<br />
+- **main_figures.m**　　　　-----　to plot the results of group analysis<br /><br /><br /><br />
 
+We used Brain Connectivity Toolbox (BCT) for stepwise functional connectivity analysis and BrainSpace Toolbox for visualization of cortex/subcortex features.
 **copyrightⓒ 2021 All rights reserved by Hyebin Lee<br /><br />**
