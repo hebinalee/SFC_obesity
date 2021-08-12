@@ -8,7 +8,7 @@ If you use this code, please cite the article.<br /><br />
 
 - **meanbold.m**　　　　　-----　to average BOLD signal for each atlas<br />
 - **connectivity_seed.m**　　-----　to compute connectivity matrix from mean BOLD signals and define seed regions<br />
-- **stepwise_fc.m**　　　　　-----　to compute stepwise connectivity matrix<br />
+- **stepwise_fc.m**　　　　　-----　to construct stepwise connectivity matrix<br />
 - **group_analysis.m**　　　-----　to perform group analysis using degree of SFC<br />
 - **TFEQ_association.m**　　-----　to associate degree of SFC with TFEQ scores<br />
 - **main_figures.m**　　　　-----　to plot the results of group analysis<br /><br />
