@@ -1,5 +1,7 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Perform group analysis using degree of SFC
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function group_analysis()
-
 inpath = 'X:/path/myfolder/inputs/';
 outpath = 'X:/path/myfolder/outputs/';
 Nsub = 301;
