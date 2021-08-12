@@ -48,7 +48,8 @@ for sidx = 1 : Nsub
     sfc = sfc(:, :, 1:Nstep);
     for step = 1 : Nstep
         W = reshape(sfc(:,:,step), [Nroi, Nroi]);
-        sfc(:, :, step) = W - diag(diag(W));
+        W = W - diag(diag(W));                           % off-diagonal
+        sfc(:, :, step) = (W - mean(W(:))) / std(W(:));  % Normalization
     end
     save([outpath, '2.sfc5/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'], 'sfc');
 end
