@@ -32,6 +32,7 @@ for sidx = 1 : Nsub
 end
 save([basepath, 'a_conn_ridge.mat'], 'CONN')
 
+
 %% 2) Define seed regions by associating degree with WHR
 load([basepath, 'a_dataset.mat'])
 DC = sum(CONN, 3);
