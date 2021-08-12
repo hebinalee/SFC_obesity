@@ -72,16 +72,7 @@ end
 
 
 %% 3) Hub regions
-hub = cell(2,1);
-for gidx = 1 : 2
-    hub{gidx} = zeros (224, Nstep);
-    for step = 1 : Nstep
-        stepDC = squeeze(grpmean_DC(gidx, :, step))';
-        stepDC = (stepDC - min(stepDC)) / (max(stepDC) - min(stepDC));
-        stepDC = stepDC / mean(stepDC);
-        hub{gidx}(:, step) = [stepDC(1:210); mean_subcortical(stepDC)] > 1.5;
-    end
-end
+load([outpath, 'groupdiff_hub.mat'])
 
 % cortex
 for gidx = 1 : 2
@@ -111,13 +102,13 @@ end
 
 %% 4) Group difference: roi-level
 load([outpath, 'groupdiff_ROI_ttest.mat']);
-sigT = H .* T;
+significant_T = H .* T;
 
 % cortex
 steps = [[1, 2, 3, 4]; [5, 6, 7, 7]];
 clim = [[-5 -5 -5 -5]; [5 5 5 5]];
 for mod = 1 : 2
-    obj = plot_hemispheres2(sigT(1:210,steps(mod,:)), {surf_lh,surf_rh}, 'parcellation', parc, 'clim', clim);
+    obj = plot_hemispheres2(significant_T(1:210,steps(mod,:)), {surf_lh,surf_rh}, 'parcellation', parc, 'clim', clim);
     colormap(obj.figure, cool_warm)
     saveas(gcf, [outpath, 'figures/ROIttest', num2str(mod), '.png'])
     close(gcf)
@@ -126,7 +117,7 @@ end
 % subcortex
 for gidx = 1 : 2
     for step = 1 : Nstep
-        plot_subcortical(sigT(211:end, step), 'ventricles', 'False', 'cmap', 'RdBu_r', 'color_range', [-5 5])
+        plot_subcortical(significant_T(211:end, step), 'ventricles', 'False', 'cmap', 'RdBu_r', 'color_range', [-5 5])
         enigma_colormap(cool_warm)
         saveas(gcf, [outpath, 'revision/figures/highlow/ROIttest_subcor_', group_name{gidx}, num2str(step), '.png'])
         close(gcf)
