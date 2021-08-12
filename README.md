@@ -6,7 +6,10 @@ If you use this code, please cite the article.<br /><br />
 **[BCT Toolbox](https://sites.google.com/site/bctnet/)** was used for SFC analysis.<br /><br />
 
 - **meanbold.m**　　　-----　to average BOLD signal for each atlas<br />
-- **connectivity.m**　　-----　to compute connectivity matrix from mean BOLD signals<br />
-- **stepwise.m**　　　　-----　to perform stepwise connectivity analysis<br /><br />
+- **connectivity_seed.m**　　-----　to compute connectivity matrix from mean BOLD signals and define seed regions<br />
+- **stepwise_fc.m**　　　　　　-----　to compute stepwise connectivity matrix<br /><br />
+- **group_analysis.m**　　　　-----　to perform group analysis using degree of SFC<br /><br />
+- **TFEQ_association.m**　　----- to Associate degree of SFC with TFEQ scores<br /><br />
+- **main_figures.m**　　　----- to plot the results of group analysis<br /><br /><br /><br />
 
 **copyrightⓒ 2021 All rights reserved by Hyebin Lee<br /><br />**
