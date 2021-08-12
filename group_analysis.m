@@ -12,8 +12,8 @@ group = (sex==1 & obesity(:,2)<0.95) | (sex==2 & obesity(:,2)<0.8);             
 group = group + 2*((sex==1 & obesity(:,2)>1.0) | (sex==2 & obesity(:,2)>0.86)); % high-risk
 
 
-%% 2) Compute group average SFC
-seed_idx = load([inpath, 'c_seed_regions.mat']);
+%% 2) Compute group average SFChttps://github.com/hebinalee/SFC_obesity/blob/main/group_analysis.m
+load([inpath, 'c_seed_regions.mat']);
 
 grpmean_SFC = cell(2,1);
 grpmean_SFC{1} = zeros(length(seed_idx), Nroi, Nstep);
@@ -53,15 +53,15 @@ save([outpath, 'groupdiff_hub.mat'], 'hub');
 
 
 %% 4) Group difference test: roi-level
-load([outpath, 'd_wholesub_norm_roidc.mat']);
+load([outpath, 'wholesub_ROI_dc.mat']);
 Nroi = 224;
 H = zeros(Nroi, Nstep);
 P = zeros(Nroi, Nstep);
 T = zeros(Nroi, Nstep);
 
 for step = 1 : Nstep
-    ob_dc = [net_dc(group==2,1:210,step), mean_subcor(net_dc(group==2,:,step)')'];
-    hw_dc = [net_dc(group==1,1:210,step), mean_subcor(net_dc(group==1,:,step)')'];
+    ob_dc = [roi_dc(group==2,1:210,step), mean_subcor(roi_dc(group==2,:,step)')'];
+    hw_dc = [roi_dc(group==1,1:210,step), mean_subcor(roi_dc(group==1,:,step)')'];
     for roi = 1 : Nroi
         [~,p,~,stats] = ttest2(ob_dc(:,roi), hw_dc(:,roi));
         P(roi, step) = p;
@@ -75,7 +75,7 @@ save([outpath, 'groupdiff_ROI_ttest.mat'], 'H', 'P', 'T');
 
 
 %% 5) Group difference test: network-level
-load([outpath, 'd_wholesub_norm_netdc.mat']);
+load([outpath, 'wholesub_NET_dc.mat']);
 num_network = 8;
 
 H = zeros(Nstep, num_network);
