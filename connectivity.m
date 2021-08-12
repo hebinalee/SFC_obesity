@@ -6,7 +6,10 @@ function connectivity()
 basepath = 'X:/path/myfolder/';
 load([basepath, 'a_sublist.mat'])
 Nsub = length(sublist);
+Nroi = 246;
 
+%% 1) Construct functional connectivity matrix
+CONN = zeros(Nsub, Nroi, Nroi);
 for sidx = 1 : Nsub
     subID = sublist{sidx};
     disp(strcat(['list = ',int2str(sidx),' -- ', subID]));
@@ -24,5 +27,23 @@ for sidx = 1 : Nsub
     R_part = reshape(netmats2,Nroi,Nroi);
     conn = .5*log((1+R_part)./(1-R_part));
     save([basepath, '1.conn0.5/conn-sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'], 'conn');
+    CONN(sidx, :, :) = conn;
 end
+save([basepath, 'a_conn_ridge.mat'], 'CONN')
+
+%% 2) Define seed regions
+load([basepath, 'a_dataset.mat'])
+DC = sum(CONN, 3);
+for roi = 1 : Nroi
+    [r, p] = corrcoef(obesity(:,1), DC(:,roi));
+    R(roi, 1) = r(1,2);
+    P(roi, 1) = p(1,2);
+end
+[selected, ~, ~, corrected_P] = fdr_bh(P, 0.05);
+seed_idx = find(selected == 1);
+significant_R = R(seed_idx);
+significant_P = corrected_P(seed_idx);
+buf = corrected_P .* (corrected_P<=0.05);
+disp([num2str(length(seed_idx)), 'regions are selected as seed'])
+save([basepath, 'c_seed_regions.mat']);
 end
