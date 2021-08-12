@@ -25,10 +25,10 @@ for sidx = 1 : Nsub
     disp(['subject = ', num2str(sidx)])
     if group(sidx) == 1
         load([inpath, '2.sfc5/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat']);
-        grpmean_SFC{1} = grpmean_SFC{1} + normalize_sfc(sfc(seed_idx,:,:));
+        grpmean_SFC{1} = grpmean_SFC{1} + sfc(seed_idx,:,:);
     elseif group(sidx) == 2
         load([inpath, '2.sfc5/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat']);
-        grpmean_SFC{2} = grpmean_SFC{2} + normalize_sfc(sfc(seed_idx,:,:));
+        grpmean_SFC{2} = grpmean_SFC{2} + sfc(seed_idx,:,:);
     end
 end
 grpmean_SFC{1} = grpmean_SFC{1} / sum(group == 1);
@@ -48,7 +48,7 @@ for gidx = 1 : 2
         stepDC = squeeze(grpmean_DC(gidx, :, step))';
         stepDC = (stepDC - min(stepDC)) / (max(stepDC) - min(stepDC));
         stepDC = stepDC / mean(stepDC);
-        hub{gidx}(:, step) = [stepDC(1:210); mean_subcor(stepDC)] > 1.5;
+        hub{gidx}(:, step) = [stepDC(1:210); mean_subcortical(stepDC)] > 1.5;
     end
 end
 save([outpath, 'groupdiff_hub.mat'], 'hub');
@@ -62,8 +62,8 @@ P = zeros(Nroi, Nstep);
 T = zeros(Nroi, Nstep);
 
 for step = 1 : Nstep
-    ob_dc = [roi_dc(group==2,1:210,step), mean_subcor(roi_dc(group==2,:,step)')'];
-    hw_dc = [roi_dc(group==1,1:210,step), mean_subcor(roi_dc(group==1,:,step)')'];
+    ob_dc = [roi_dc(group==2,1:210,step), mean_subcortical(roi_dc(group==2,:,step)')'];
+    hw_dc = [roi_dc(group==1,1:210,step), mean_subcortical(roi_dc(group==1,:,step)')'];
     for roi = 1 : Nroi
         [~,p,~,stats] = ttest2(ob_dc(:,roi), hw_dc(:,roi));
         P(roi, step) = p;
