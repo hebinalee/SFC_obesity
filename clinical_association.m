@@ -15,7 +15,7 @@ clear eat_score total_tfeq
 
 
 %% 2) Load degree of SFC for all subjects
-load([outpath, 'd_wholesub_norm_netdc.mat']);
+load([outpath, 'wholesub_NET_dc.mat']);
 network = [1, 2, 3, 4, 5, 6, 7, 8];
 netdc = squeeze(net_dc(1,:,7,network));
 Nperm = 5000;
