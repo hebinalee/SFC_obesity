@@ -6,7 +6,7 @@ inpath = 'X:/path/myfolder/inputs/';
 outpath = 'X:/path/myfolder/outputs/';
 Nsub = 301;
 Nroi = 246;
-Nstep = 7;
+Nstep = 5;
 
 %% 1) Divide participants into two group based on obesity phenotypes
 load([inpath, 'a_dataset.mat'])
@@ -79,20 +79,20 @@ save([outpath, 'groupdiff_ROI_ttest.mat'], 'H', 'P', 'T');
 
 %% 5) Group difference test: network-level
 load([outpath, 'wholesub_NET_dc.mat']);
-num_network = 8;
+num_network = 7;
 
-H = zeros(Nstep, num_network);
-P = zeros(Nstep, num_network);
-T = zeros(Nstep, num_network);
+H = zeros(num_network, Nstep);
+P = zeros(num_network, Nstep);
+T = zeros(num_network, Nstep);
 for step = 1 : Nstep
     for nidx = 1 : num_network
-        [~,p,~,stats] = ttest2(net_dc(group==2,step,nidx), net_dc(group==1,step,nidx));
-        P(step, nidx) = p;
-        T(step, nidx) = stats.tstat;
+        [~,p,~,stats] = ttest2(net_dc(group==2,nidx,step), net_dc(group==1,nidx,step));
+        P(nidx, step) = p;
+        T(nidx, step) = stats.tstat;
     end
-    [selected, ~, ~, corrected_P] = fdr_bh(P(step, :), 0.05);
-    H(step, :) = selected;
-    P(step, :) = corrected_P;
+    [selected, ~, ~, corrected_P] = fdr_bh(P(:, step), 0.05);
+    H(:, step) = selected;
+    P(:, step) = corrected_P;
 end
 save([outpath, 'groupdiff_NET_ttest.mat'], 'H', 'P', 'T');
 end
