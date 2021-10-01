@@ -10,8 +10,8 @@ Nstep = 7;
 
 %% 1) Divide participants into two group based on obesity phenotypes
 load([inpath, 'a_dataset.mat'])
-group = (sex==1 & obesity(:,2)<0.95) | (sex==2 & obesity(:,2)<0.8);             % low-risk
-group = group + 2*((sex==1 & obesity(:,2)>1.0) | (sex==2 & obesity(:,2)>0.86)); % high-risk
+group = obesity(:,1)>=18.5 & obesity(:,1)<25 & ((sex==1 & obesity(:,2)<0.95) | (sex==2 & obesity(:,2)<0.8));    % healthy weight
+group = group + 2*obesity(:,1)>=25 & ((sex==1 & obesity(:,2)>1.0) | (sex==2 & obesity(:,2)>0.86));              % overweight
 save([outpath, 'a_group.mat'], 'group')
 
 
