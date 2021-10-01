@@ -4,12 +4,6 @@ outpath = 'X:/path/myfolder/outputs/';
 Nsub = 301;
 Nroi = 246;
 Nstep = 7;
-
-%% load DC values & WHR
-load([inpath, 'a_dataset.mat'])
-load([inpath, 'a_conn_ridge.mat'])
-DC = sum(CONN,3);
-clear CONN
 Nperm = 1000;
 
 
@@ -64,7 +58,7 @@ for i = 1 : Nperm
 end
 
 
-%% 5) Randomly pick representative iteration
+%% 4) Randomly pick representative iteration
 disp(['## Randomly pick representative iteration - processing', newline]);
 i = randi(Nperm, 1, 1);
 load([inpath, 'a_dataset.mat'])
@@ -74,7 +68,7 @@ grpmean_DC(2,:,:) = mean(grpmean_SFC{2}, 1);
 group = bootstrap_group(:, i);
 
 
-%% 6) Group difference test: ROI-level
+%% 5) Group difference test: ROI-level
 disp(['## Group difference test: ROI-level - processing', newline]);
 load([outpath, 'wholesub_ROI_dc.mat']);
 Nroi = 224;
@@ -97,7 +91,7 @@ end
 save([outpath, 'high_low/groupdiff_ROI_ttest.mat'], 'H', 'P', 'T');
 
 
-%% 9) Group difference test: network-level
+%% 6) Group difference test: network-level
 disp(['## Group difference test: network-level - processing', newline]);
 load([outpath, 'wholesub_NET_dc.mat']);
 num_network = 7;
@@ -118,7 +112,7 @@ end
 save([outpath, 'high_low/groupdiff_NET_ttest.mat'], 'H', 'P', 'T');
 
 
-%% 10) Group difference test: subcortex-wise
+%% 7) Group difference test: subcortex-wise
 disp(['## Group difference test: subcortex-wise - processing', newline]);
 Nsubcor = 7;    % amygdala, hippocampus, globus pallidus, nucleus accumbens, putamen, caudate, and thalamus
 subcor_meanDC = zeros(Nsub, Nsubcor, Nstep);
