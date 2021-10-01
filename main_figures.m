@@ -23,7 +23,7 @@ group_name = {'HW', 'OB'};
 
 
 %% 1) R-values
-load([basepath, 'c_Rvalue.mat']);
+load([basepath, 'c_Rvalue_WHRrelated.mat']);
 
 % cortex
 obj = plot_hemispheres2(R(1:210,:), {surf_lh,surf_rh}, 'parcellation', parc, 'clim', [-0.3; 0.3]);
