@@ -8,7 +8,7 @@ Nsub = 301;
 Nroi = 246;
 Nstep = 200;
 
-%% 1) Binarize connectivity matrix with threshold
+%% 1) Binarize connectivity matrix with threshold 5
 disp(['## Binarization of connectivity - processing', newline]);
 th = 5;
 for sidx = 1 : Nsub
