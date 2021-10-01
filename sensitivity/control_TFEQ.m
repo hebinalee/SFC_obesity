@@ -69,6 +69,7 @@ end
 
 
 %% 5) Construct SFC matrix
+disp(['## Compute SFC matrix - processing', newline]);
 for sidx = 1 : Nsub
     disp(['subject = ', num2str(sidx)])
     load([outpath, 'controlTFEQ/1.binconn/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
@@ -78,6 +79,7 @@ end
 
 
 %% 6) Compute group average SFC
+disp(['## Calculate group average SFC - processing', newline]);
 grpmean_SFC = cell(2,1);
 grpmean_SFC{1} = zeros(length(seed_idx), Nroi, Nstep);
 grpmean_SFC{2} = zeros(length(seed_idx), Nroi, Nstep);
@@ -101,7 +103,8 @@ grpmean_DC(2,:,:) = squeeze(sum(grpmean_SFC{2}(:,:,1:Nstep), 1));
 save([outpath, 'controlTFEQ/groupmean_SFC.mat'], 'grpmean_SFC', 'grpmean_DC')
 
 
-%% 7) Save DC values per ROI/Network for all subjects
+%% 7) Save DC values per ROI/network for all subjects
+disp(['## Save DC values per ROI/network for all subjects - processing', newline]);
 load([inpath, 'controlTFEQ/seed_regions.mat']);
 load([outpath, 'a_group.mat'])
 
@@ -129,6 +132,7 @@ save([outpath, 'controlTFEQ/wholesub_NET_dc.mat'], 'net_dc');
 
 
 %% 8) Group difference test: ROI-level
+disp(['## Group difference test: ROI-level - processing', newline]);
 load([outpath, 'controlTFEQ/wholesub_ROI_dc.mat']);
 Nroi = 224;
 H = zeros(Nroi, Nstep);
@@ -151,6 +155,7 @@ save([outpath, 'controlTFEQ/groupdiff_ROI_ttest.mat'], 'H', 'P', 'T');
 
 
 %% 9) Group difference test: network-level
+disp(['## Group difference test: network-level - processing', newline]);
 load([outpath, 'controlTFEQ/wholesub_NET_dc.mat']);
 num_network = 7;
 
@@ -171,6 +176,7 @@ save([outpath, 'controlTFEQ/groupdiff_NET_ttest.mat'], 'H', 'P', 'T');
 
 
 %% 10) Group difference test: subcortex-wise
+disp(['## Group difference test: subcortex-wise - processing', newline]);
 Nsubcor = 7;    % amygdala, hippocampus, globus pallidus, nucleus accumbens, putamen, caudate, and thalamus
 subcor_meanDC = zeros(Nsub, Nsubcor, Nstep);
 for step = 1 : Nstep
