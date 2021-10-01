@@ -13,8 +13,7 @@ disp(['## Binarization of connectivity - processing', newline]);
 th = 5;
 for sidx = 1 : Nsub
     disp(['subject = ', num2str(sidx)])
-    % load([basepath, '1.conn0.5/conn-sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
-    conn = squeeze(CONN(sidx, :, :));
+    load([basepath, '1.conn0.5/conn-sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
     binconn = zeros(Nroi, Nroi);
     W = conn;
     if isequal(W,W.')	% if symmetric matrix
