@@ -77,7 +77,31 @@ for sidx = 1 : Nsub
 end
 
 
-%% 6) Save DC values per ROI/Network for all subjects
+%% 6) Compute group average SFC
+grpmean_SFC = cell(2,1);
+grpmean_SFC{1} = zeros(length(seed_idx), Nroi, Nstep);
+grpmean_SFC{2} = zeros(length(seed_idx), Nroi, Nstep);
+
+for sidx = 1 : Nsub
+    disp(['subject = ', num2str(sidx)])
+    if group(sidx) == 1
+        load([inpath, 'controlTFEQ/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat']);
+        grpmean_SFC{1} = grpmean_SFC{1} + sfc(seed_idx,:,:);
+    elseif group(sidx) == 2
+        load([inpath, 'controlTFEQ/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat']);
+        grpmean_SFC{2} = grpmean_SFC{2} + sfc(seed_idx,:,:);
+    end
+end
+grpmean_SFC{1} = grpmean_SFC{1} / sum(group == 1);
+grpmean_SFC{2} = grpmean_SFC{2} / sum(group == 2);
+
+grpmean_DC = zeros(2, Nroi, Nstep);
+grpmean_DC(1,:,:) = squeeze(sum(grpmean_SFC{1}(:,:,1:Nstep), 1));
+grpmean_DC(2,:,:) = squeeze(sum(grpmean_SFC{2}(:,:,1:Nstep), 1));
+save([outpath, 'controlTFEQ/groupmean_SFC.mat'], 'grpmean_SFC', 'grpmean_DC')
+
+
+%% 7) Save DC values per ROI/Network for all subjects
 load([inpath, 'controlTFEQ/seed_regions.mat']);
 load([outpath, 'a_group.mat'])
 
@@ -104,32 +128,8 @@ save([outpath, 'controlTFEQ/wholesub_ROI_dc.mat'], 'roi_dc');
 save([outpath, 'controlTFEQ/wholesub_NET_dc.mat'], 'net_dc');
 
 
-%% 7) Compute group average SFC
-grpmean_SFC = cell(2,1);
-grpmean_SFC{1} = zeros(length(seed_idx), Nroi, Nstep);
-grpmean_SFC{2} = zeros(length(seed_idx), Nroi, Nstep);
-
-for sidx = 1 : Nsub
-    disp(['subject = ', num2str(sidx)])
-    if group(sidx) == 1
-        load([inpath, 'controlTFEQ/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat']);
-        grpmean_SFC{1} = grpmean_SFC{1} + sfc(seed_idx,:,:);
-    elseif group(sidx) == 2
-        load([inpath, 'controlTFEQ/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat']);
-        grpmean_SFC{2} = grpmean_SFC{2} + sfc(seed_idx,:,:);
-    end
-end
-grpmean_SFC{1} = grpmean_SFC{1} / sum(group == 1);
-grpmean_SFC{2} = grpmean_SFC{2} / sum(group == 2);
-
-grpmean_DC = zeros(2, Nroi, Nstep);
-grpmean_DC(1,:,:) = squeeze(sum(grpmean_SFC{1}(:,:,1:Nstep), 1));
-grpmean_DC(2,:,:) = squeeze(sum(grpmean_SFC{2}(:,:,1:Nstep), 1));
-save([outpath, 'controlTFEQ/groupmean_SFC.mat'], 'grpmean_SFC', 'grpmean_DC')
-
-
 %% 8) Group difference test: ROI-level
-load([outpath, 'wholesub_ROI_dc.mat']);
+load([outpath, 'controlTFEQ/wholesub_ROI_dc.mat']);
 Nroi = 224;
 H = zeros(Nroi, Nstep);
 P = zeros(Nroi, Nstep);
@@ -147,11 +147,11 @@ for step = 1 : Nstep
     H(:, step) = selected;
     P(:, step) = corrected_P;
 end
-save([outpath, 'groupdiff_ROI_ttest.mat'], 'H', 'P', 'T');
+save([outpath, 'controlTFEQ/groupdiff_ROI_ttest.mat'], 'H', 'P', 'T');
 
 
 %% 9) Group difference test: network-level
-load([outpath, 'wholesub_NET_dc.mat']);
+load([outpath, 'controlTFEQ/wholesub_NET_dc.mat']);
 num_network = 7;
 
 H = zeros(num_network, Nstep);
@@ -167,5 +167,32 @@ for step = 1 : Nstep
     H(:, step) = selected;
     P(:, step) = corrected_P;
 end
-save([outpath, 'groupdiff_NET_ttest.mat'], 'H', 'P', 'T');
+save([outpath, 'controlTFEQ/groupdiff_NET_ttest.mat'], 'H', 'P', 'T');
+
+
+%% 10) Group difference test: subcortex-wise
+Nsubcor = 7;    % amygdala, hippocampus, globus pallidus, nucleus accumbens, putamen, caudate, and thalamus
+subcor_meanDC = zeros(Nsub, Nsubcor, Nstep);
+for step = 1 : Nstep
+    subcor_dc = mean_subcortical(roi_dc(:,:,step)')';
+    % take average for left and right hemisphere
+    subcor_meanDC(:,:,step) = mean(reshape(subcor_dc, [Nsub, Nsubcor, 2]), 3);
+end
+
+H = zeros(Nsubcor, Nstep);
+P = zeros(Nsubcor, Nstep);
+T = zeros(Nsubcor, Nstep);
+for step = 1 : Nstep
+    for ridx = 1 : Nsubcor
+        [~,p,~,stats] = ttest2(subcor_meanDC(group==2,ridx,step), subcor_meanDC(group==1,ridx,step));
+        P(ridx, step) = p;
+        T(ridx, step) = stats.tstat;
+    end
+    % correct across regions
+    [h, ~, ~, p] = fdr_bh(P(:,step), 0.05);
+    P(:, step) = p;
+    H(:, step) = h;
+end
+save([outpath, 'controlTFEQ/groupdiff_SUB_ttest.mat'], 'H', 'P', 'T');
+end
 end
