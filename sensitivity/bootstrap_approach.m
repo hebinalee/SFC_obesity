@@ -15,7 +15,7 @@ Nperm = 1000;
 
 %% 1) Subject bootstrapping
 subsample = randi(Nsub, round(Nsub*0.9), Nperm);
-save([outpath, 'revision/bootstrap_subsamples.mat'], 'subsample')
+save([outpath, 'bootstrap/bootstrap_subsamples.mat'], 'subsample')
 
     
 %% 2) Associate degree centrality with WHR
@@ -47,7 +47,7 @@ bootstrap_meanR = bootstrap_meanR / 1000;
 for roi = 1 : Nroi
     bootstrap_meansigR(roi) = bootstrap_meansigR(roi) / sum(bootstrap_selected(roi, :));
 end
-save([outpath, 'revision/bootstrap_seedROI.mat'], 'bootstrap_selected', 'roi_prob_map', 'bootstrap_meanR', 'bootstrap_meansigR')
+save([outpath, 'bootstrap/bootstrap_seedROI.mat'], 'bootstrap_selected', 'roi_prob_map', 'bootstrap_meanR', 'bootstrap_meansigR')
 
     
 %% 3) Save ROI probability map image
@@ -63,11 +63,11 @@ for i = 1 : Nroi
     meansigR_img(idx) = bootstrap_meansigR(i);
 end
 bna.img = roi_probmap_img;
-save_nii(bna, [outpath, 'sensitivity/bootstrap_seed_probmap.nii']);
+save_nii(bna, [outpath, 'bootstrap/bootstrap_seed_probmap.nii']);
 bna.img = meanR_img;
-save_nii(bna, [outpath, 'sensitivity/bootstrap_meanR.nii']);
+save_nii(bna, [outpath, 'bootstrap/bootstrap_meanR.nii']);
 bna.img = meansigR_img;
-save_nii(bna, [outpath, 'sensitivity/bootstrap_meansigR.nii']);
+save_nii(bna, [outpath, 'bootstrap/bootstrap_meansigR.nii']);
 
 
 %% 4) Compute group average SFC matrix
@@ -92,7 +92,7 @@ for i = 1 : Nperm
     end
     grpmean_SFC{1} = grpmean_SFC{1} / sum(group(subsample(:,i)) == 1);
     grpmean_SFC{2} = grpmean_SFC{2} / sum(group(subsample(:,i)) == 2);
-    save([outpath, 'sensitivity/bootstrap_sfc/stepwise_', num2str(i), '.mat'], 'grpmean_SFC')
+    save([outpath, 'bootstrap/sfc/stepwise_', num2str(i), '.mat'], 'grpmean_SFC')
 end
 
 
@@ -101,11 +101,11 @@ bootstrap_mean_sfc = cell(2,1);
 bootstrap_mean_sfc{1} = zeros(Nroi, Nstep);
 bootstrap_mean_sfc{2} = zeros(Nroi, Nstep);
 for i = 1 : Nperm
-    load([outpath, 'sensitivity/bootstrap_sfc/stepwise_', num2str(i), '.mat'])
+    load([outpath, 'bootstrap/sfc/stepwise_', num2str(i), '.mat'])
     bootstrap_mean_sfc{1} = bootstrap_mean_sfc{1} + squeeze(sum(seed_avg{1}, 1));
     bootstrap_mean_sfc{2} = bootstrap_mean_sfc{2} + squeeze(sum(seed_avg{2}, 1));
 end
 bootstrap_mean_sfc{1} = bootstrap_mean_sfc{1} / 1000;
 bootstrap_mean_sfc{2} = bootstrap_mean_sfc{2} / 1000;
-save([outpath, 'sensitivity/bootstrap_mean_SFC.mat'], 'bootstrap_mean_sfc')
+save([outpath, 'bootstrap/bootstrap_mean_SFC.mat'], 'bootstrap_mean_sfc')
 end
