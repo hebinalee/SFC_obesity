@@ -70,6 +70,7 @@ for step = 1 : Nstep
         P(roi, step) = p;
         T(roi, step) = stats.tstat;
     end
+    % correct across networks
     [selected, ~, ~, corrected_P] = fdr_bh(P(:, step), 0.05);
     H(:, step) = selected;
     P(:, step) = corrected_P;
@@ -95,4 +96,30 @@ for step = 1 : Nstep
     P(:, step) = corrected_P;
 end
 save([outpath, 'groupdiff_NET_ttest.mat'], 'H', 'P', 'T');
+
+
+%% 6) Group difference test: subcortex-wise
+Nsubcor = 7;    % amygdala, hippocampus, globus pallidus, nucleus accumbens, putamen, caudate, and thalamus
+subcor_meanDC = zeros(Nsub, Nsubcor, Nstep);
+for step = 1 : Nstep
+    subcor_dc = mean_subcortical(roi_dc(:,:,step)')';
+    % take average for left and right hemisphere
+    subcor_meanDC(:,:,step) = mean(reshape(subcor_dc, [Nsub, Nsubcor, 2]), 3);
+end
+
+H = zeros(Nsubcor, Nstep);
+P = zeros(Nsubcor, Nstep);
+T = zeros(Nsubcor, Nstep);
+for step = 1 : Nstep
+    for ridx = 1 : Nsubcor
+        [~,p,~,stats] = ttest2(subcor_meanDC(group==2,ridx,step), subcor_meanDC(group==1,ridx,step));
+        P(ridx, step) = p;
+        T(ridx, step) = stats.tstat;
+    end
+    % correct across regions
+    [h, ~, ~, p] = fdr_bh(P(:,step), 0.05);
+    P(:, step) = p;
+    H(:, step) = h;
+end
+save([outpath, 'groupdiff_SUB_ttest.mat'], 'H', 'P', 'T');
 end
