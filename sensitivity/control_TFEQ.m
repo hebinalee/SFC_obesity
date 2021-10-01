@@ -1,4 +1,4 @@
-function control_confounds()
+function control_TFEQ()
 inpath = 'X:/path/myfolder/inputs/';
 outpath = 'X:/path/myfolder/outputs/';
 Nsub = 301;
