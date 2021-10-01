@@ -3,7 +3,7 @@ inpath = 'X:/path/myfolder/inputs/';
 outpath = 'X:/path/myfolder/outputs/';
 Nsub = 301;
 Nroi = 246;
-Nstep = 7;
+Nstep = 5;
 
 
 %% 1) Regress out TFEQ scores from BMI & WHR
@@ -53,6 +53,7 @@ significant_R = R(seed_idx);
 significant_P = corrected_P(seed_idx);
 R_seed = selected .* R;
 disp(['p1 = ', num2str(sum(P<0.05)), ' & p2 = ', num2str(length(seed_idx))])
+save([basepath, 'controlTFEQ/seed_regions.mat'], 'seed_idx');
 save([outpath, 'controlTFEQ/Rvalue_WHRrelated.mat'], 'R', 'R_seed')
 
 
@@ -68,7 +69,6 @@ end
 
 
 %% 5) Construct SFC matrix
-Nstep = 5;
 for sidx = 1 : Nsub
     disp(['subject = ', num2str(sidx)])
     load([outpath, 'controlTFEQ/1.binconn/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
@@ -77,29 +77,95 @@ for sidx = 1 : Nsub
 end
 
 
-%% 7) Save DC values per ROI/Network for all subjects
+%% 6) Save DC values per ROI/Network for all subjects
+load([inpath, 'controlTFEQ/seed_regions.mat']);
+load([outpath, 'a_group.mat'])
+
 load([inpath, 'cluster_Fan_Net_r280.mat'])
 net8 = cluster_Fan_Net.dat(1:246, 3);
 net = cluster_Fan_Net.descrip{3,2};
 net(9) = [];
-num_network = 8;
-
-load([inpath, 'c_seed_regions.mat']);
-load([outpath, 'a_group.mat'])
+num_network = 7;
 
 roi_dc = zeros(Nsub, Nroi, Nstep);
-net_dc = zeros(Nsub, Nstep, num_network);
+net_dc = zeros(Nsub, num_network, Nstep);
 for sidx = 1 : Nsub
-    load([inpath, '2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
+    load([inpath, 'controlTFEQ/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
     for step = 1 : Nstep
         dc = sum(sfc(:,:,step), 1);
         dc(isinf(dc)|isnan(dc)) = 0;
         roi_dc(sidx, :, step) = dc;
-        for nidx = 1 : 8
-            net_dc(sidx, step, nidx) = mean(dc(net8 == nidx));
+        for nidx = 1 : num_network
+            net_dc(sidx, nidx, step) = mean(dc(net8 == nidx));
         end
     end
 end
-save([outpath, 'wholesub_ROI_dc.mat'], 'roi_dc');
-save([outpath, 'wholesub_NET_dc.mat'], 'net_dc');
-load([outpath, 'a_group.mat'])
+save([outpath, 'controlTFEQ/wholesub_ROI_dc.mat'], 'roi_dc');
+save([outpath, 'controlTFEQ/wholesub_NET_dc.mat'], 'net_dc');
+
+
+%% 7) Compute group average SFC
+grpmean_SFC = cell(2,1);
+grpmean_SFC{1} = zeros(length(seed_idx), Nroi, Nstep);
+grpmean_SFC{2} = zeros(length(seed_idx), Nroi, Nstep);
+
+for sidx = 1 : Nsub
+    disp(['subject = ', num2str(sidx)])
+    if group(sidx) == 1
+        load([inpath, 'controlTFEQ/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat']);
+        grpmean_SFC{1} = grpmean_SFC{1} + sfc(seed_idx,:,:);
+    elseif group(sidx) == 2
+        load([inpath, 'controlTFEQ/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat']);
+        grpmean_SFC{2} = grpmean_SFC{2} + sfc(seed_idx,:,:);
+    end
+end
+grpmean_SFC{1} = grpmean_SFC{1} / sum(group == 1);
+grpmean_SFC{2} = grpmean_SFC{2} / sum(group == 2);
+
+grpmean_DC = zeros(2, Nroi, Nstep);
+grpmean_DC(1,:,:) = squeeze(sum(grpmean_SFC{1}(:,:,1:Nstep), 1));
+grpmean_DC(2,:,:) = squeeze(sum(grpmean_SFC{2}(:,:,1:Nstep), 1));
+save([outpath, 'controlTFEQ/groupmean_SFC.mat'], 'grpmean_SFC', 'grpmean_DC')
+
+
+%% 8) Group difference test: ROI-level
+load([outpath, 'wholesub_ROI_dc.mat']);
+Nroi = 224;
+H = zeros(Nroi, Nstep);
+P = zeros(Nroi, Nstep);
+T = zeros(Nroi, Nstep);
+
+for step = 1 : Nstep
+    ob_dc = [roi_dc(group==2,1:210,step), mean_subcortical(roi_dc(group==2,:,step)')'];
+    hw_dc = [roi_dc(group==1,1:210,step), mean_subcortical(roi_dc(group==1,:,step)')'];
+    for roi = 1 : Nroi
+        [~,p,~,stats] = ttest2(ob_dc(:,roi), hw_dc(:,roi));
+        P(roi, step) = p;
+        T(roi, step) = stats.tstat;
+    end
+    [selected, ~, ~, corrected_P] = fdr_bh(P(:, step), 0.05);
+    H(:, step) = selected;
+    P(:, step) = corrected_P;
+end
+save([outpath, 'groupdiff_ROI_ttest.mat'], 'H', 'P', 'T');
+
+
+%% 9) Group difference test: network-level
+load([outpath, 'wholesub_NET_dc.mat']);
+num_network = 7;
+
+H = zeros(num_network, Nstep);
+P = zeros(num_network, Nstep);
+T = zeros(num_network, Nstep);
+for step = 1 : Nstep
+    for nidx = 1 : num_network
+        [~,p,~,stats] = ttest2(net_dc(group==2,nidx,step), net_dc(group==1,nidx,step));
+        P(nidx, step) = p;
+        T(nidx, step) = stats.tstat;
+    end
+    [selected, ~, ~, corrected_P] = fdr_bh(P(:, step), 0.05);
+    H(:, step) = selected;
+    P(:, step) = corrected_P;
+end
+save([outpath, 'groupdiff_NET_ttest.mat'], 'H', 'P', 'T');
+end
