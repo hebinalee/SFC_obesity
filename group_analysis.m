@@ -12,6 +12,7 @@ Nstep = 7;
 load([inpath, 'a_dataset.mat'])
 group = (sex==1 & obesity(:,2)<0.95) | (sex==2 & obesity(:,2)<0.8);             % low-risk
 group = group + 2*((sex==1 & obesity(:,2)>1.0) | (sex==2 & obesity(:,2)>0.86)); % high-risk
+save([outpath, 'a_group.mat'], 'group')
 
 
 %% 2) Compute group average SFChttps://github.com/hebinalee/SFC_obesity/blob/main/group_analysis.m
