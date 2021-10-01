@@ -13,6 +13,13 @@ clear CONN
 Nperm = 1000;
 
 
+%% 1) Divide participants into two group based on WHR
+load([inpath, 'a_dataset.mat'])
+group = (sex==1 & obesity(:,2)<0.95) | (sex==2 & obesity(:,2)<0.8);             % low-risk
+group = group + 2*((sex==1 & obesity(:,2)>1.0) | (sex==2 & obesity(:,2)>0.86)); % high-risk
+save([outpath, 'high_low/group.mat'], 'group')
+
+
 %% 1) Subject bootstrapping
 subsample = randi(Nsub, round(Nsub*0.9), Nperm);
 save([outpath, 'bootstrap/bootstrap_subsamples.mat'], 'subsample')
