@@ -34,21 +34,21 @@ load([inpath, 'cluster_Fan_Net_r280.mat'])
 net8 = cluster_Fan_Net.dat(1:246, 3);
 net = cluster_Fan_Net.descrip{3,2};
 net(9) = [];
-num_network = 8;
+num_network = 7;
 
 load([inpath, 'c_seed_regions.mat']);
 load([outpath, 'a_group.mat'])
 
 roi_dc = zeros(Nsub, Nroi, Nstep);
-net_dc = zeros(Nsub, Nstep, num_network);
+net_dc = zeros(Nsub, num_network, Nstep);
 for sidx = 1 : Nsub
     load([inpath, '2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
     for step = 1 : Nstep
         dc = sum(sfc(:,:,step), 1);
         dc(isinf(dc)|isnan(dc)) = 0;
         roi_dc(sidx, :, step) = dc;
-        for nidx = 1 : 8
-            net_dc(sidx, step, nidx) = mean(dc(net8 == nidx));
+        for nidx = 1 : num_network
+            net_dc(sidx, nidx, step) = mean(dc(net8 == nidx));
         end
     end
 end
