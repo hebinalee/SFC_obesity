@@ -14,72 +14,33 @@ Nperm = 1000;
 
 
 %% 1) Divide participants into two group based on WHR
+disp(['## Divide subjects into low/high-health risk groups - processing', newline]);
 load([inpath, 'a_dataset.mat'])
 group = (sex==1 & obesity(:,2)<0.95) | (sex==2 & obesity(:,2)<0.8);             % low-risk
 group = group + 2*((sex==1 & obesity(:,2)>1.0) | (sex==2 & obesity(:,2)>0.86)); % high-risk
+group1_idx = find(group == 1);
+group2_idx = find(group == 2);
+Nsubsample = length(group2_idx);
 save([outpath, 'high_low/group.mat'], 'group')
 
 
-%% 1) Subject bootstrapping
-subsample = randi(Nsub, round(Nsub*0.9), Nperm);
-save([outpath, 'bootstrap/bootstrap_subsamples.mat'], 'subsample')
-
-    
-%% 2) Associate degree centrality with WHR
-bootstrap_selected = zeros(Nroi, Nperm);
-roi_prob_map = zeros(Nroi, 1);
-bootstrap_meanR = zeros(Nroi, 1);
-bootstrap_meansigR = zeros(Nroi, 1);
-P = zeros(Nroi, 1);
+%% 2) Subject bootstrapping
+disp(['## Subject bootstrapping for low-risk group - processing', newline]);
+subsample = zeros(Nsubsample, Nperm);
+bootstrap_group = zeros(Nsub, Nperm);
 for i = 1 : Nperm
-    if rem(i,100) == 0
-        disp(['i = ', num2str(i)]);
+    subsample(:, i) = randperm(length(group1_idx), Nsubsample);
+    if length(unique(subsample(:, i))) ~= Nsubsample
+        disp(['i = ', num2str(i), ' : Repetition error during sampling'])
     end
-    subX = DC(subsample(:, i), :);      % DC
-    subY = obesity(subsample(:, i), 2); % WHR
-    for roi = 1 : Nroi
-        [r, p] = corrcoef(subX(:, roi), subY);
-        P(roi) = p(1,2);
-        bootstrap_meanR(roi) = bootstrap_meanR(roi) + r(1,2);
-        if bootstrap_selected(roi, i) == 1
-            bootstrap_meansigR(roi) = bootstrap_meansigR(roi) + r(1,2);
-        end
-    end
-    [selected, ~, ~, corrected_P] = fdr_bh(P, 0.05);
-    bootstrap_selected(:, i) = selected;
-    roi_prob_map = roi_prob_map + selected;
+    bootstrap_group(group1_idx(subsample(:,i)), i) = 1;
+    bootstrap_group(group2_idx, i) = 2;
 end
-bootstrap_meanR = bootstrap_meanR / 1000;
-
-for roi = 1 : Nroi
-    bootstrap_meansigR(roi) = bootstrap_meansigR(roi) / sum(bootstrap_selected(roi, :));
-end
-save([outpath, 'bootstrap/bootstrap_seedROI.mat'], 'bootstrap_selected', 'roi_prob_map', 'bootstrap_meanR', 'bootstrap_meansigR')
-
-    
-%% 3) Save ROI probability map image
-bna = load_nii([store7, 'hblee/ETC/Atlas/BNA/BNA_3mm.nii']);
-roi = bna.img;
-roi_probmap_img = zeros(size(roi));
-meanR_img = zeros(size(roi));
-meansigR_img = zeros(size(roi));
-for i = 1 : Nroi
-    idx = find(roi(:) == i);
-    roi_probmap_img(idx) = roi_prob_map(i)/1000;
-    meanR_img(idx) = bootstrap_meanR(i);
-    meansigR_img(idx) = bootstrap_meansigR(i);
-end
-bna.img = roi_probmap_img;
-save_nii(bna, [outpath, 'bootstrap/bootstrap_seed_probmap.nii']);
-bna.img = meanR_img;
-save_nii(bna, [outpath, 'bootstrap/bootstrap_meanR.nii']);
-bna.img = meansigR_img;
-save_nii(bna, [outpath, 'bootstrap/bootstrap_meansigR.nii']);
+save([outpath, 'high_low/bootstrap_subsamples.mat'], 'subsample', 'bootstrap_group')
 
 
-%% 4) Compute group average SFC matrix
-clear DC
-Nsubsample = size(subsample, 1);
+%% 3) Compute group average SFC matrix
+disp(['## Compute group average SFC matrix during iterations - processing', newline]);
 for i = 1 : Nperm
     if rem(i,100) == 0
         disp(['i = ', num2str(i)]);
@@ -99,20 +60,88 @@ for i = 1 : Nperm
     end
     grpmean_SFC{1} = grpmean_SFC{1} / sum(group(subsample(:,i)) == 1);
     grpmean_SFC{2} = grpmean_SFC{2} / sum(group(subsample(:,i)) == 2);
-    save([outpath, 'bootstrap/sfc/stepwise_', num2str(i), '.mat'], 'grpmean_SFC')
+    save([outpath, 'high_low/sfc/iteration_', num2str(i), '.mat'], 'grpmean_SFC')
 end
 
 
-%% 5) average SFC analysis across iteration
-bootstrap_mean_sfc = cell(2,1);
-bootstrap_mean_sfc{1} = zeros(Nroi, Nstep);
-bootstrap_mean_sfc{2} = zeros(Nroi, Nstep);
-for i = 1 : Nperm
-    load([outpath, 'bootstrap/sfc/stepwise_', num2str(i), '.mat'])
-    bootstrap_mean_sfc{1} = bootstrap_mean_sfc{1} + squeeze(sum(seed_avg{1}, 1));
-    bootstrap_mean_sfc{2} = bootstrap_mean_sfc{2} + squeeze(sum(seed_avg{2}, 1));
+%% 5) Randomly pick representative iteration
+disp(['## Randomly pick representative iteration - processing', newline]);
+i = randi(Nperm, 1, 1);
+load([inpath, 'a_dataset.mat'])
+load([outpath, 'high_low/sfc/iteration_', num2str(i), '.mat'])
+grpmean_DC(1,:,:) = mean(grpmean_SFC{1}, 1);
+grpmean_DC(2,:,:) = mean(grpmean_SFC{2}, 1);
+group = bootstrap_group(:, i);
+
+
+%% 6) Group difference test: ROI-level
+disp(['## Group difference test: ROI-level - processing', newline]);
+load([outpath, 'wholesub_ROI_dc.mat']);
+Nroi = 224;
+H = zeros(Nroi, Nstep);
+P = zeros(Nroi, Nstep);
+T = zeros(Nroi, Nstep);
+
+for step = 1 : Nstep
+    ob_dc = [roi_dc(group==2,1:210,step), mean_subcortical(roi_dc(group==2,:,step)')'];
+    hw_dc = [roi_dc(group==1,1:210,step), mean_subcortical(roi_dc(group==1,:,step)')'];
+    for roi = 1 : Nroi
+        [~,p,~,stats] = ttest2(ob_dc(:,roi), hw_dc(:,roi));
+        P(roi, step) = p;
+        T(roi, step) = stats.tstat;
+    end
+    [selected, ~, ~, corrected_P] = fdr_bh(P(:, step), 0.05);
+    H(:, step) = selected;
+    P(:, step) = corrected_P;
 end
-bootstrap_mean_sfc{1} = bootstrap_mean_sfc{1} / 1000;
-bootstrap_mean_sfc{2} = bootstrap_mean_sfc{2} / 1000;
-save([outpath, 'bootstrap/bootstrap_mean_SFC.mat'], 'bootstrap_mean_sfc')
+save([outpath, 'high_low/groupdiff_ROI_ttest.mat'], 'H', 'P', 'T');
+
+
+%% 9) Group difference test: network-level
+disp(['## Group difference test: network-level - processing', newline]);
+load([outpath, 'wholesub_NET_dc.mat']);
+num_network = 7;
+
+H = zeros(num_network, Nstep);
+P = zeros(num_network, Nstep);
+T = zeros(num_network, Nstep);
+for step = 1 : Nstep
+    for nidx = 1 : num_network
+        [~,p,~,stats] = ttest2(net_dc(group==2,nidx,step), net_dc(group==1,nidx,step));
+        P(nidx, step) = p;
+        T(nidx, step) = stats.tstat;
+    end
+    [selected, ~, ~, corrected_P] = fdr_bh(P(:, step), 0.05);
+    H(:, step) = selected;
+    P(:, step) = corrected_P;
+end
+save([outpath, 'high_low/groupdiff_NET_ttest.mat'], 'H', 'P', 'T');
+
+
+%% 10) Group difference test: subcortex-wise
+disp(['## Group difference test: subcortex-wise - processing', newline]);
+Nsubcor = 7;    % amygdala, hippocampus, globus pallidus, nucleus accumbens, putamen, caudate, and thalamus
+subcor_meanDC = zeros(Nsub, Nsubcor, Nstep);
+for step = 1 : Nstep
+    subcor_dc = mean_subcortical(roi_dc(:,:,step)')';
+    % take average for left and right hemisphere
+    subcor_meanDC(:,:,step) = mean(reshape(subcor_dc, [Nsub, Nsubcor, 2]), 3);
+end
+
+H = zeros(Nsubcor, Nstep);
+P = zeros(Nsubcor, Nstep);
+T = zeros(Nsubcor, Nstep);
+for step = 1 : Nstep
+    for ridx = 1 : Nsubcor
+        [~,p,~,stats] = ttest2(subcor_meanDC(group==2,ridx,step), subcor_meanDC(group==1,ridx,step));
+        P(ridx, step) = p;
+        T(ridx, step) = stats.tstat;
+    end
+    % correct across regions
+    [h, ~, ~, p] = fdr_bh(P(:,step), 0.05);
+    P(:, step) = p;
+    H(:, step) = h;
+end
+save([outpath, 'high_low/groupdiff_SUB_ttest.mat'], 'H', 'P', 'T');
+end
 end
