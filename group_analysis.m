@@ -15,7 +15,7 @@ group = group + 2*obesity(:,1)>=25 & ((sex==1 & obesity(:,2)>1.0) | (sex==2 & ob
 save([outpath, 'a_group.mat'], 'group')
 
 
-%% 2) Compute group average SFChttps://github.com/hebinalee/SFC_obesity/blob/main/group_analysis.m
+%% 2) Compute group average SFC
 load([inpath, 'c_seed_regions.mat']);
 
 grpmean_SFC = cell(2,1);
