@@ -48,5 +48,5 @@ significant_P = corrected_P(seed_idx);
 buf = corrected_P .* (corrected_P<=0.05);
 disp([num2str(length(seed_idx)), 'regions are selected as seed'])
 save([basepath, 'c_seed_regions.mat'], 'seed_idx');
-save([basepath, 'c_Rvalue.mat'], 'R', 'significant_R');
+save([basepath, 'c_Rvalue_WHRrelated.mat'], 'R', 'significant_R');
 end
