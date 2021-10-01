@@ -35,7 +35,7 @@ for sidx = 1 : Nsub
     % binarize
     W=double(W~=0);
     binconn = W;
-    save([outpath, '1.binconn5/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'], 'binconn');
+    save([outpath, '1.binconn/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'], 'binconn');
 end
 
 
@@ -43,7 +43,7 @@ end
 Nstep = 200;
 for sidx = 1 : Nsub
     disp(['subject = ', num2str(sidx)])
-    load([outpath, '1.binconn5/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
+    load([outpath, '1.binconn/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
     [sfc, ~, ~] = findwalks(binconn);
     sfc = sfc(:, :, 1:Nstep);
     for step = 1 : Nstep
@@ -51,7 +51,7 @@ for sidx = 1 : Nsub
         W = W - diag(diag(W));                           % off-diagonal
         sfc(:, :, step) = (W - mean(W(:))) / std(W(:));  % Normalization
     end
-    save([outpath, '2.sfc5/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'], 'sfc');
+    save([outpath, '2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'], 'sfc');
 end
 
 
@@ -68,7 +68,7 @@ load([outpath, 'a_group.mat'])
 roi_dc = zeros(Nsub, Nroi, Nstep);
 net_dc = zeros(Nsub, Nstep, num_network);
 for sidx = 1 : Nsub
-    load([inpath, '2.sfc5/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
+    load([inpath, '2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
     for step = 1 : Nstep
         dc = sum(sfc(:,:,step), 1);
         dc(isinf(dc)|isnan(dc)) = 0;
