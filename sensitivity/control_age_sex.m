@@ -11,17 +11,17 @@ disp(['## Regress out age & sex from obesity phenotypes - processing', newline])
 load([outpath, 'a_dataset.mat'])
 load([outpath, 'a_eating_scores.mat'])
 
-tbl = table(obesity(:, 1), tfeq(:, 1), tfeq(:, 2), 'VariableNames', {'bmi','tfeq1','tfeq2'});
-mdl = fitlm(tbl, 'bmi ~ tfeq1 + tfeq2');
+tbl = table(obesity(:, 1), age, sex, 'VariableNames', {'bmi','age','sex'});
+mdl = fitlm(tbl, 'bmi ~ age + sex');
 bmi_reg = mdl.Residuals.Raw;
-tbl = table(obesity(:, 2), tfeq(:, 1), tfeq(:, 2), 'VariableNames', {'whr','tfeq1','tfeq2'});
-mdl = fitlm(tbl, 'whr ~ tfeq1 + tfeq2');
+tbl = table(obesity(:, 2), age, sex, 'VariableNames', {'whr','age','sex'});
+mdl = fitlm(tbl, 'whr ~ age + sex');
 whr_reg = mdl.Residuals.Raw;
-save([outpath, 'controlTFEQ/obesity_regressed_out.mat'], 'bmi_reg', 'whr_reg')
+save([outpath, 'control_age_sex/obesity_regressed_out.mat'], 'bmi_reg', 'whr_reg')
 
 
 %% 2) Regress out TFEQ scores from CONNECTIVITY
-disp(['## Regress out TFEQ from connectivity - processing', newline]);
+disp(['## Regress out age & sex from connectivity - processing', newline]);
 load([inpath, 'a_conn_ridge.mat'])
 CONN_reg = zeros(Nsub, Nroi, Nroi);
 for i = 1 : Nroi
@@ -29,13 +29,13 @@ for i = 1 : Nroi
     for j = 1 : Nroi
         if i ~= j
             % make model
-            tbl = table(CONN(:,i,j), tfeq(:, 1), tfeq(:, 2), 'VariableNames', {'R','tfeq1','tfeq2'});
-            mdl = fitlm(tbl, 'R ~ tfeq1 + tfeq2');
+            tbl = table(CONN(:,i,j), age, sex, 'VariableNames', {'R','age','sex'});
+            mdl = fitlm(tbl, 'R ~ age + sex');
             CONN_reg(:,i,j) = mdl.Residuals.Raw;
         end
     end
 end
-save([outpath, 'controlTFEQ/CONN_regressed_out.mat'], 'CONN_reg', '-v7.3')
+save([outpath, 'control_age_sex/CONN_regressed_out.mat'], 'CONN_reg', '-v7.3')
 end
 
 
@@ -53,8 +53,8 @@ significant_R = R(seed_idx);
 significant_P = corrected_P(seed_idx);
 R_seed = selected .* R;
 disp(['p1 = ', num2str(sum(P<0.05)), ' & p2 = ', num2str(length(seed_idx))])
-save([basepath, 'controlTFEQ/seed_regions.mat'], 'seed_idx');
-save([outpath, 'controlTFEQ/Rvalue_WHRrelated.mat'], 'R', 'R_seed')
+save([basepath, 'control_age_sex/seed_regions.mat'], 'seed_idx');
+save([outpath, 'control_age_sex/Rvalue_WHRrelated.mat'], 'R', 'R_seed')
 
 
 %% 4) Binarize connectivity matrix with threshold 5
@@ -64,20 +64,22 @@ for sidx = 1 : Nsub
     disp(['subject = ', num2str(sidx)])
     conn = squeeze(CONN(sidx, :, :));
     binconn = binarize_conn(conn);
-    save([outpath, 'controlTFEQ/1.binconn/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'], 'binconn');
+    save([outpath, 'control_age_sex/1.binconn/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'], 'binconn');
 end
 
 
 %% 5) Construct SFC matrix
+disp(['## Compute SFC matrix - processing', newline]);
 for sidx = 1 : Nsub
     disp(['subject = ', num2str(sidx)])
-    load([outpath, 'controlTFEQ/1.binconn/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
+    load([outpath, 'control_age_sex/1.binconn/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
     sfc = compute_sfc(binconn, Nstep)
-    save([outpath, 'controlTFEQ/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'], 'sfc');
+    save([outpath, 'control_age_sex/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'], 'sfc');
 end
 
 
 %% 6) Compute group average SFC
+disp(['## Calculate group average SFC - processing', newline]);
 grpmean_SFC = cell(2,1);
 grpmean_SFC{1} = zeros(length(seed_idx), Nroi, Nstep);
 grpmean_SFC{2} = zeros(length(seed_idx), Nroi, Nstep);
@@ -85,10 +87,10 @@ grpmean_SFC{2} = zeros(length(seed_idx), Nroi, Nstep);
 for sidx = 1 : Nsub
     disp(['subject = ', num2str(sidx)])
     if group(sidx) == 1
-        load([inpath, 'controlTFEQ/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat']);
+        load([inpath, 'control_age_sex/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat']);
         grpmean_SFC{1} = grpmean_SFC{1} + sfc(seed_idx,:,:);
     elseif group(sidx) == 2
-        load([inpath, 'controlTFEQ/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat']);
+        load([inpath, 'control_age_sex/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat']);
         grpmean_SFC{2} = grpmean_SFC{2} + sfc(seed_idx,:,:);
     end
 end
@@ -98,11 +100,12 @@ grpmean_SFC{2} = grpmean_SFC{2} / sum(group == 2);
 grpmean_DC = zeros(2, Nroi, Nstep);
 grpmean_DC(1,:,:) = squeeze(sum(grpmean_SFC{1}(:,:,1:Nstep), 1));
 grpmean_DC(2,:,:) = squeeze(sum(grpmean_SFC{2}(:,:,1:Nstep), 1));
-save([outpath, 'controlTFEQ/groupmean_SFC.mat'], 'grpmean_SFC', 'grpmean_DC')
+save([outpath, 'control_age_sex/groupmean_SFC.mat'], 'grpmean_SFC', 'grpmean_DC')
 
 
-%% 7) Save DC values per ROI/Network for all subjects
-load([inpath, 'controlTFEQ/seed_regions.mat']);
+%% 7) Save DC values per ROI/network for all subjects
+disp(['## Save DC values per ROI/network for all subjects - processing', newline]);
+load([inpath, 'control_age_sex/seed_regions.mat']);
 load([outpath, 'a_group.mat'])
 
 load([inpath, 'cluster_Fan_Net_r280.mat'])
@@ -114,7 +117,7 @@ num_network = 7;
 roi_dc = zeros(Nsub, Nroi, Nstep);
 net_dc = zeros(Nsub, num_network, Nstep);
 for sidx = 1 : Nsub
-    load([inpath, 'controlTFEQ/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
+    load([inpath, 'control_age_sex/2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
     for step = 1 : Nstep
         dc = sum(sfc(:,:,step), 1);
         dc(isinf(dc)|isnan(dc)) = 0;
@@ -124,12 +127,13 @@ for sidx = 1 : Nsub
         end
     end
 end
-save([outpath, 'controlTFEQ/wholesub_ROI_dc.mat'], 'roi_dc');
-save([outpath, 'controlTFEQ/wholesub_NET_dc.mat'], 'net_dc');
+save([outpath, 'control_age_sex/wholesub_ROI_dc.mat'], 'roi_dc');
+save([outpath, 'control_age_sex/wholesub_NET_dc.mat'], 'net_dc');
 
 
 %% 8) Group difference test: ROI-level
-load([outpath, 'controlTFEQ/wholesub_ROI_dc.mat']);
+disp(['## Group difference test: ROI-level - processing', newline]);
+load([outpath, 'control_age_sex/wholesub_ROI_dc.mat']);
 Nroi = 224;
 H = zeros(Nroi, Nstep);
 P = zeros(Nroi, Nstep);
@@ -147,11 +151,12 @@ for step = 1 : Nstep
     H(:, step) = selected;
     P(:, step) = corrected_P;
 end
-save([outpath, 'controlTFEQ/groupdiff_ROI_ttest.mat'], 'H', 'P', 'T');
+save([outpath, 'control_age_sex/groupdiff_ROI_ttest.mat'], 'H', 'P', 'T');
 
 
 %% 9) Group difference test: network-level
-load([outpath, 'controlTFEQ/wholesub_NET_dc.mat']);
+disp(['## Group difference test: network-level - processing', newline]);
+load([outpath, 'control_age_sex/wholesub_NET_dc.mat']);
 num_network = 7;
 
 H = zeros(num_network, Nstep);
@@ -167,10 +172,11 @@ for step = 1 : Nstep
     H(:, step) = selected;
     P(:, step) = corrected_P;
 end
-save([outpath, 'controlTFEQ/groupdiff_NET_ttest.mat'], 'H', 'P', 'T');
+save([outpath, 'control_age_sex/groupdiff_NET_ttest.mat'], 'H', 'P', 'T');
 
 
 %% 10) Group difference test: subcortex-wise
+disp(['## Group difference test: subcortex-wise - processing', newline]);
 Nsubcor = 7;    % amygdala, hippocampus, globus pallidus, nucleus accumbens, putamen, caudate, and thalamus
 subcor_meanDC = zeros(Nsub, Nsubcor, Nstep);
 for step = 1 : Nstep
@@ -193,6 +199,6 @@ for step = 1 : Nstep
     P(:, step) = p;
     H(:, step) = h;
 end
-save([outpath, 'controlTFEQ/groupdiff_SUB_ttest.mat'], 'H', 'P', 'T');
+save([outpath, 'control_age_sex/groupdiff_SUB_ttest.mat'], 'H', 'P', 'T');
 end
 end
