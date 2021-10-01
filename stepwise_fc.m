@@ -24,13 +24,7 @@ Nstep = 200;
 for sidx = 1 : Nsub
     disp(['subject = ', num2str(sidx)])
     load([outpath, '1.binconn/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'])
-    [sfc, ~, ~] = findwalks(binconn);
-    sfc = sfc(:, :, 1:Nstep);
-    for step = 1 : Nstep
-        W = reshape(sfc(:,:,step), [Nroi, Nroi]);
-        W = W - diag(diag(W));                           % off-diagonal
-        sfc(:, :, step) = (W - mean(W(:))) / std(W(:));  % Normalization
-    end
+    sfc = compute_sfc(binconn, Nstep)
     save([outpath, '2.sfc/sub', pad(num2str(sidx, '%d'), 3, 'left', '0'), '.mat'], 'sfc');
 end
 
