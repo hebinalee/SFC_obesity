@@ -1,5 +1,5 @@
 ## SFC_obesity - functions used in the main analysis ##
-These functions are defined for convinience of analysis since are repeatedly used in main analysis.<br /><br />
+These functions are repeatedly used in main analysis.<br /><br />
 
 - **binarize_conn.m**　　　-----　To binarize weighted connectivity matrix with threshold of 95%</br>
 　　　　　　　　　　　　　SFC analysis requires binarized connectivity matrix as input, thus this should be preceded.<br />
