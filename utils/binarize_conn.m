@@ -1,4 +1,12 @@
 function binconn = binarize_conn(conn)
+% 
+% This function binarize weighted connectivity matrix with threshold of 95%
+% and return binarized connectivity matrix
+% 
+% Inputs :  conn - Weighted connectivity matrix (n x n)
+% Outputs:  binconn - Binarized connectivity matrix (n x n)
+% 
+
 th = 5;
 Nroi = size(conn, 1);
 binconn = zeros(Nroi, Nroi);
