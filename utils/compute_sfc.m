@@ -4,7 +4,7 @@ function sfc = compute_sfc(binconn, Nstep)
 % The approach evaluates direct connections to indirect connections involving a varying number of step distances.
 % 
 % Inputs :  binconn - Binarized connectivity matrix (Nroi x Nroi)
-% Outputs:  sfc     - Stepwise connectivity matrix (Nroi x Nroi x Nstep)
+% Outputs:  sfc     - Stepwise connectivity matrix  (Nroi x Nroi x Nstep)
 % 
 
 [sfc, ~, ~] = findwalks(binconn);
