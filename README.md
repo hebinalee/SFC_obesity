@@ -3,7 +3,9 @@ This is code for the paper **"Disrupted stepwise functional brain organization i
 The paper link will be updated.<br />
 If you use this code, please cite the article.<br /><br />
 
-**[Brian Connectivity Toolbox](https://sites.google.com/site/bctnet/)** was used for SFC analysis.<br />
+We obtained data from **[Enhanced Nathan Kline Institute-Rockland Sample (eNKI) database](http://fcon_1000.projects.nitrc.org/indi/enhanced/access.html)**.<br />
+Imaging data were preprocessed using **[FuNP pipeline](https://gitlab.com/by9433/funp)**.<br />
+**[Brain Connectivity Toolbox](https://sites.google.com/site/bctnet/)** was used for SFC analysis.<br />
 **[BrainSpace Toolbox](https://brainspace.readthedocs.io/en/latest/#)** was used for visualization of cortex/subcortex features.<br /><br />
 
 - **meanbold.m**　　　　　-----　to average BOLD signal for each atlas<br />
