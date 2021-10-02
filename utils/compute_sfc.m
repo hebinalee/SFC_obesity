@@ -1,10 +1,10 @@
 function sfc = compute_sfc(binconn, Nstep)
 % 
-% This function counts the number of all possible paths that connect different brain regions with specific step distances
-% and return binarized connectivity matrix
+% This function counts the number of all possible paths that connect different brain regions with specific step distances.
+% The approach evaluates direct connections to indirect connections involving a varying number of step distances.
 % 
-% Inputs :  conn - Weighted connectivity matrix (Nroi x Nroi)
-% Outputs:  binconn - Binarized connectivity matrix (Nroi x Nroi x Nstep)
+% Inputs :  binconn - Binarized connectivity matrix (Nroi x Nroi)
+% Outputs:  sfc     - Stepwise connectivity matrix (Nroi x Nroi x Nstep)
 % 
 
 [sfc, ~, ~] = findwalks(binconn);
