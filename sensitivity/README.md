@@ -1,5 +1,5 @@
 ## SFC_obesity - Sensitivity analyses ##
-We performed several sensitivity analyses to confirm robustness of our results.<br />
+We performed several sensitivity analyses to confirm robustness of our results.<br /><br />
 
 - **bootstrap_approach.m**　　-----　We opted for a bootstrap-based approach by randomly selecting 90% of subjects with replacement</br>
 　　　　　　　　　　　　　　　 1,000 times and repeating our main analysis<br />
