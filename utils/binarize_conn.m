@@ -3,7 +3,7 @@ function binconn = binarize_conn(conn)
 % This function binarize weighted connectivity matrix with threshold of 95%
 % and return binarized connectivity matrix.
 % 
-% Inputs :  conn - Weighted connectivity matrix (n x n)
+% Inputs :  conn    - Weighted connectivity matrix  (n x n)
 % Outputs:  binconn - Binarized connectivity matrix (n x n)
 % 
 
