@@ -1,9 +1,11 @@
 function subcor = mean_subcortical(bna)
-%
-%   get values for subcortex areas
-%   INPUT:  bna (246 X N)
-%   OUTPUT: subcor (14 X N)
-%
+% 
+% This function take average feature values of 14 subcortical regions from 36 subcortical regions in BNA atlas.
+% (amygdala, hippocampus, globus pallidus, nucleus accumbens, putamen, caudate, and thalamus for left/right hemisphere)
+% 
+% Inputs :  bna    - Feature vector/matrix of whole BNA regions (246 X N)
+% Outputs:  subcor - Feature vector/matrix of 14 subcortical subregions (14 X N)
+% 
 
 numval = size(bna, 2);
 subcor = zeros(14, numval);
