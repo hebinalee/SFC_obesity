@@ -1,7 +1,7 @@
 ## SFC_obesity ##
-▶ This is code for the paper **"Disrupted stepwise functional brain organization in overweight individuals"** (Accepted)<br />
-▶ **The paper link:** will be updated.<br />
-▶ If you use this code, please cite the article.<br /><br />
+:large_blue_diamond: This is code for the paper **"Disrupted stepwise functional brain organization in overweight individuals"** (Accepted)<br />
+:large_blue_diamond: **The paper link:** will be updated.<br />
+:large_blue_diamond: If you use this code, please cite the article.<br /><br />
 
 ✔ We obtained data from **[Enhanced Nathan Kline Institute-Rockland Sample (eNKI) database](http://fcon_1000.projects.nitrc.org/indi/enhanced/access.html)**.<br />
 ✔ Imaging data were preprocessed using **[FuNP pipeline](https://gitlab.com/by9433/funp)**.<br />
@@ -15,4 +15,4 @@
 - **TFEQ_association.m**　　-----　to associate degree of SFC with TFEQ scores<br />
 - **main_figures.m**　　　　-----　to plot the results of group analysis<br /><br />
 
-**copyrightⓒ 2021 All rights reserved by Hyebin Lee<br /><br />**
+:pushpin: **copyrightⓒ 2021 All rights reserved by Hyebin Lee<br /><br />**
