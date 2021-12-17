@@ -72,7 +72,6 @@ for score = 1 : num_score
         end
     end
 end
-network = [1, 2, 3, 5, 8];
-[H, ~, ~, P_corrected] = fdr_bh(P(network,:), 0.05);
+[H, ~, ~, P_corrected] = fdr_bh(P, 0.05);
 save([outpath, 'tfeq_correlation_analysis.mat'], 'H', 'P', 'real_R')
 end
