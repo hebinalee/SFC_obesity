@@ -9,7 +9,8 @@
 ✔ **[BrainSpace Toolbox](https://brainspace.readthedocs.io/en/latest/#)** was used for visualization of cortex/subcortex features.<br /><br />
 
 - **meanbold.m**　　　　　-----　to average BOLD signal for each atlas<br />
-- **connectivity_seed.m**　　-----　to compute connectivity matrix from mean BOLD signals and define seed regions<br />
+- **connectivity_seed.m**　　-----　to compute connectivity matrix from mean BOLD signals and define seed
+- 　　　　　　　　　　　regions<br />
 - **stepwise_fc.m**　　　　　-----　to construct stepwise connectivity matrix<br />
 - **group_analysis.m**　　　-----　to perform group analysis using degree of SFC<br />
 - **TFEQ_association.m**　　-----　to associate degree of SFC with TFEQ scores<br />
