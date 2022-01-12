@@ -1,6 +1,6 @@
 ## SFC_obesity ##
-:large_blue_diamond: This is code for the paper **["Disrupted stepwise functional brain organization in overweight individuals"](https://www.nature.com/articles/s42003-021-02957-7)** (Published)<br />
-:large_blue_diamond: **The paper link:** will be updated.<br />
+:large_blue_diamond: This is code for the paper **"Disrupted stepwise functional brain organization in overweight individuals"** (Published)<br />
+:large_blue_diamond: **The paper link:** https://www.nature.com/articles/s42003-021-02957-7#citeas<br />
 :large_blue_diamond: If you use this code, please cite the article.<br /><br />
 
 ✔ We obtained data from **[Enhanced Nathan Kline Institute-Rockland Sample (eNKI) database](http://fcon_1000.projects.nitrc.org/indi/enhanced/access.html)**.<br />
