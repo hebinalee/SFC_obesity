@@ -20,7 +20,7 @@
 - **TFEQ_association.m**　　-----　to associate degree of SFC with TFEQ scores<br />
 - **main_figures.m**　　　　-----　to plot the results of group analysis<br /><br />
 
-## Directory structure
+## Directory Structure
 ```bash
 ├── data
 │   ├── README.md
