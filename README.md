@@ -1,5 +1,5 @@
 ## SFC_obesity ##
-:large_blue_diamond: This is code for the paper **"Disrupted stepwise functional brain organization in overweight individuals"**<br />
+:large_blue_diamond: This is code for the paper **"Disrupted stepwise functional brain organization in overweight individuals"** (JCR 10%)<br />
 :large_blue_diamond: **Paper link:** https://www.nature.com/articles/s42003-021-02957-7<br />
 :large_blue_diamond: If you use this code, please cite the article.<br />
 　　*Lee, Hyebin, et al. "Disrupted stepwise functional brain organization in overweight individuals." Communications Biology 5.1 (2022): 1-9.*<br /><br />
